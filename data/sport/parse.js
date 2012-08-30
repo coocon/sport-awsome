@@ -9,7 +9,6 @@ var mongoose = require('mongoose');
 
 
 var databaseUrl = 'mongodb://127.0.0.1/sports',
-Schema = mongoose.Schema,
 collections = ['england'];
 
 //连接数据库testdb并设置将要被查询的表为isbn，它可以是一个集合
@@ -18,52 +17,39 @@ var db = mongoose.connect(databaseUrl);
 
 var trim = function(str) {
    return str.replace(/(^\s*)|(\s*$)/g, "");  
-    
-    
 }
-var createSchema =  function(_mongoose) {
-    var mongoose = _mongoose || mongoose,
-        Schema = mongoose.Schema; 
-    var medalSchema = new Schema({
-        id:{type:Number, index:true},
-        rank:{type:Number},
-        gold:{type:Number},
-        silver:{type:Number},
-        bronze:{type:Number},
-        country:{type:String},
-        date:{type:Date, default:new Date()}
-    }); 
-   var model_name = coll_name = 'england';
-   mongoose.model(model_name, medalSchema );
 
-   var _schema  = db.model(model_name);
-   console.log('_schema:', _schema);
-   if( !_schema ) {
-       mongoose.model(model_name, medalSchema );
-       _schema  = db.model(model_name);
+var Schema = new mongoose.Schema( {
 
-   } 
+    id:{type:Number, index:true, unique:true},
+    userName: {type:String},
+    passWord: {type:String},
+    createDate: {type:Date, default: new Date()}
 
-   return _schema;
-}
+});
+//collection name
+var model_name = coll_name  = 'england';
+//create collections
+mongoose.model(model_name, Schema);
+
 //items into db
 var saveItems = function(Model, items ) {
     var _cnt = 0; 
-    var saveItem = function( dataItem, item) {
+    var saveItem = function( dataItem, len) {
         var myItem = new Model(); 
         for(var name in dataItem) {
             myItem[name] = dataItem[name];     
         }  
         console.log(myItem);
-        _cnt += 1;
         myItem.save(function(err) {
             if (err) {
                 console.log('save failed');
             }
 
+            _cnt += 1;
             console.log('save success');
             if(_cnt >= len) {
-                db.connection.close();
+                db.nnection.close();
             }
         });   
         
